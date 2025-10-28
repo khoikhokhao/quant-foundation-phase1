@@ -1,0 +1,30 @@
+# configs/config.yaml
+project:
+  name: quant-foundation-phase1
+data:
+  path: /content/BTC_2019_2023_1d.csv   # đổi sang đường dẫn của bạn
+  tz: UTC
+indicators:
+  sma_short: 20
+  sma_long: 50
+  ema_short: 12
+  ema_long: 26
+  rsi_n: 14
+  zscore_n: 20
+  bollinger:
+    win: 20
+    k: 2.0
+signals:
+  rsi_low: 30
+  rsi_high: 70
+  z_long: -1.0
+  z_short: 1.0
+  use: sig_sma          # chọn 1 trong: sig_sma | sig_rsi | sig_z
+backtest:
+  mode: fixed_pct       # full | fixed_pct
+  risk_pct: 0.20        # 20% vốn
+  rf_daily: 0.0         # lãi suất phi rủi ro theo ngày (nếu dùng)
+outputs:
+  dir: outputs
+  save_trades: true
+  save_equity: true
