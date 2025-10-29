@@ -1,0 +1,7 @@
+data/*.*          # không commit CSV
+!data/**/.gitkeep
+reports/**/figures/*.png
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+.DS_Store
