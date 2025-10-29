@@ -28,3 +28,78 @@ outputs:
   dir: outputs
   save_trades: true
   save_equity: true
+#excercise
+data:
+  # Ưu tiên sàn; script sẽ thử theo thứ tự này
+  exchange_priority: ["binance", "okx", "kraken", "kucoin", "coinbase", "bitfinex", "gateio"]
+  symbol: "ETH/USDT"                   # có thể đổi: "BTC/USDT", ...
+  timeframe: "1d"
+  start_date: "2019-09-01"
+  end_date: null                       # null = đến hiện tại (UTC)
+  tz: "UTC"
+  save_csv: false                      # true nếu muốn lưu data/raw/*.csv
+
+fees:
+  fee_bps: 5                           # 5 bps = 0.05%/giao dịch
+  slippage_bps: 2                      # 2 bps = 0.02%/giao dịch
+  start_cash: 10000
+
+backtest:
+  # Áp dụng chung cho mọi chiến lược
+  shift_exec_bars: 1                   # khớp lệnh tại T+1 (tránh lookahead)
+  report_metrics: ["cumret","sharpe_252","mdd","trades","exposure_pct"]
+  plot_equity: true
+
+strategy:
+  # Chọn loại chiến lược cần chạy: "rsi" | "sma"
+  type: "rsi"
+
+  # --- Tham số cho RSI stateful (chỉ dùng khi type = "rsi") ---
+  rsi:
+    period: 14
+    buy_th: 30                         # vào khi RSI < buy_th
+    sell_th: 70                        # thoát khi RSI > sell_th
+
+  # --- Tham số cho SMA crossover (chỉ dùng khi type = "sma") ---
+  sma:
+    fast: 20                           # FAST < SLOW
+    slow: 50
+
+grid_search:
+  enable: false                        # true nếu muốn quét siêu tham số
+  # Lưới cho RSI
+  rsi:
+    buy_range:  [15, 45, 2]            # start, end, step  (15..45 step 2)
+    sell_range: [55, 95, 2]
+    gap_min: 20
+    min_trades: 5
+  # Lưới cho SMA
+  sma:
+    fast_range: [5, 60, 5]             # 5..60 step 5
+    slow_range: [50, 250, 10]          # 50..250 step 10
+    gap_min: 10
+    min_trades: 10
+  top_k: 10
+
+# (tuỳ chọn) nhiều thí nghiệm trong một file — ghi đè các trường trên
+experiments:
+  - name: "RSI_ETH_14_30_70"
+    data:
+      symbol: "ETH/USDT"
+    strategy:
+      type: "rsi"
+      rsi: { period: 14, buy_th: 30, sell_th: 70 }
+
+  - name: "SMA_ETH_5_60"
+    data:
+      symbol: "ETH/USDT"
+    strategy:
+      type: "sma"
+      sma: { fast: 5, slow: 60 }
+
+  - name: "SMA_BTC_5_60"
+    data:
+      symbol: "BTC/USDT"
+    strategy:
+      type: "sma"
+      sma: { fast: 5, slow: 60 }
