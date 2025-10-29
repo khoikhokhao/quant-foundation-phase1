@@ -1,0 +1,12 @@
+{
+  "profile": "SMA_BTC",
+  "strategy": {"name": "SMA_Crossover", "params": {"fast": 5, "slow": 60}, "shift_bars": 1},
+  "data": {"symbol": "BTC/USDT", "timeframe": "1d", "start_date": "2019-09-01", "end_date": "2025-10-29", "rows": 2251},
+  "costs": {"fee_bps": 5, "slippage_bps": 2, "start_cash": 10000},
+  "metrics": {"cumulative_return": 13.436434, "sharpe_daily_252": 1.0337, "max_drawdown": -0.450105, "trades": 60, "exposure_pct": 56.0219},
+  "benchmark": {"cumret_bh": 12.702929, "sharpe_bh": 0.842683, "mdd_bh": -0.766257},
+  "artifacts": {"equity_png": "results/2025-10-29/sma_btc_equity.png"},
+  "run": {"run_ts": "2025-10-29T11:22:12Z", "engine": "backtest_core@v0.1"}
+  "grid_best": {"fast": 5, "slow": 60, "score": "Sharpe", "sharpe": 1.0337}
+
+}
