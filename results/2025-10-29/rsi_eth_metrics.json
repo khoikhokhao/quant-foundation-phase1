@@ -1,0 +1,11 @@
+{
+  "profile": "RSI_ETH",
+  "strategy": {"name": "RSI", "params": {"period": 14, "buy_th": 30, "sell_th": 70}, "shift_bars": 1},
+  "data": {"symbol": "ETH/USDT", "timeframe": "1d", "start_date": "2019-09-01", "end_date": "2025-10-29", "rows": 2251},
+  "costs": {"fee_bps": 5, "slippage_bps": 2, "start_cash": 10000},
+  "metrics": {"cumulative_return": 1.257992, "sharpe_daily_252": 0.446574, "max_drawdown": -0.503634, "trades": 18, "exposure_pct": 33.6739},
+  "benchmark": {"cumret_bh": 9.850595, "sharpe_bh": 0.780638, "mdd_bh": -0.766257},
+  "artifacts": {"equity_png": "results/2025-10-29/rsi_eth_equity.png", "blotter_csv": null},
+  "run": {"run_ts": "2025-10-29T10:32:05Z", "engine": "backtest_core@v0.1"}
+  "grid_best": {"buy_th": 21, "sell_th": 89, "score": "Sharpe", "sharpe":  1.050190}
+}
