@@ -1,0 +1,6 @@
+ccxt==4.*
+pandas
+numpy
+matplotlib
+pytz
+PyYAML
