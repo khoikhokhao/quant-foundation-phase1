@@ -1,6 +1,7 @@
 # configs/config.yaml
 project:
   name: quant-foundation-phase1
+#keytopic
 data:
   path: /content/BTC_2019_2023_1d.csv   # đổi sang đường dẫn của bạn
   tz: UTC
