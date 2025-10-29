@@ -1,106 +1,70 @@
-# configs/config.yaml
-project:
-  name: quant-foundation-phase1
-#keytopic
-data:
-  path: /content/BTC_2019_2023_1d.csv   # đổi sang đường dẫn của bạn
-  tz: UTC
-indicators:
-  sma_short: 20
-  sma_long: 50
-  ema_short: 12
-  ema_long: 26
-  rsi_n: 14
-  zscore_n: 20
-  bollinger:
-    win: 20
-    k: 2.0
-signals:
-  rsi_low: 30
-  rsi_high: 70
-  z_long: -1.0
-  z_short: 1.0
-  use: sig_sma          # chọn 1 trong: sig_sma | sig_rsi | sig_z
-backtest:
-  mode: fixed_pct       # full | fixed_pct
-  risk_pct: 0.20        # 20% vốn
-  rf_daily: 0.0         # lãi suất phi rủi ro theo ngày (nếu dùng)
-outputs:
-  dir: outputs
-  save_trades: true
-  save_equity: true
-#excercise
-data:
-  # Ưu tiên sàn; script sẽ thử theo thứ tự này
-  exchange_priority: ["binance", "okx", "kraken", "kucoin", "coinbase", "bitfinex", "gateio"]
-  symbol: "ETH/USDT"                   # có thể đổi: "BTC/USDT", ...
-  timeframe: "1d"
+# config.yaml  — one-file-to-rule-them-all
+
+run:
   start_date: "2019-09-01"
-  end_date: null                       # null = đến hiện tại (UTC)
-  tz: "UTC"
-  save_csv: false                      # true nếu muốn lưu data/raw/*.csv
-
-fees:
-  fee_bps: 5                           # 5 bps = 0.05%/giao dịch
-  slippage_bps: 2                      # 2 bps = 0.02%/giao dịch
+  end_date: null          # null = đến hiện tại (UTC)
+  timezone: "UTC"
   start_cash: 10000
+  fee_bps: 5
+  slippage_bps: 2
 
-backtest:
-  # Áp dụng chung cho mọi chiến lược
-  shift_exec_bars: 1                   # khớp lệnh tại T+1 (tránh lookahead)
-  report_metrics: ["cumret","sharpe_252","mdd","trades","exposure_pct"]
-  plot_equity: true
+data:
+  primary_exchange: "binance"
+  fallbacks: ["okx", "kraken", "kucoin", "coinbase", "bitfinex", "gateio"]
+  timeframe: "1d"
 
-strategy:
-  # Chọn loại chiến lược cần chạy: "rsi" | "sma"
-  type: "rsi"
+paths:
+  results_dir: "results"
+  figures_dir: "results/figures"
+  logs_dir: "results/logs"
 
-  # --- Tham số cho RSI stateful (chỉ dùng khi type = "rsi") ---
-  rsi:
-    period: 14
-    buy_th: 30                         # vào khi RSI < buy_th
-    sell_th: 70                        # thoát khi RSI > sell_th
+# ===== Profiles (chọn 1 để chạy) =====
+profiles:
 
-  # --- Tham số cho SMA crossover (chỉ dùng khi type = "sma") ---
-  sma:
-    fast: 20                           # FAST < SLOW
-    slow: 50
-
-grid_search:
-  enable: false                        # true nếu muốn quét siêu tham số
-  # Lưới cho RSI
-  rsi:
-    buy_range:  [15, 45, 2]            # start, end, step  (15..45 step 2)
-    sell_range: [55, 95, 2]
-    gap_min: 20
-    min_trades: 5
-  # Lưới cho SMA
-  sma:
-    fast_range: [5, 60, 5]             # 5..60 step 5
-    slow_range: [50, 250, 10]          # 50..250 step 10
-    gap_min: 10
-    min_trades: 10
-  top_k: 10
-
-# (tuỳ chọn) nhiều thí nghiệm trong một file — ghi đè các trường trên
-experiments:
-  - name: "RSI_ETH_14_30_70"
-    data:
-      symbol: "ETH/USDT"
+  RSI_ETH:
+    asset: { symbol: "ETH/USDT" }
     strategy:
-      type: "rsi"
-      rsi: { period: 14, buy_th: 30, sell_th: 70 }
+      name: "RSI"
+      params: { period: 14, buy_th: 30, sell_th: 70 }
+      shift_bars: 1
+    backtest:
+      report: ["Cumulative Return", "Sharpe (daily,252)", "Max Drawdown", "Trades", "Exposure %"]
 
-  - name: "SMA_ETH_5_60"
-    data:
-      symbol: "ETH/USDT"
+  SMA_ETH:
+    asset: { symbol: "ETH/USDT" }
     strategy:
-      type: "sma"
-      sma: { fast: 5, slow: 60 }
+      name: "SMA_Crossover"
+      params: { fast: 20, slow: 50 }
+      shift_bars: 1
+    backtest:
+      report: ["Cumulative Return", "Sharpe (daily,252)", "Max Drawdown", "Trades", "Exposure %"]
 
-  - name: "SMA_BTC_5_60"
-    data:
-      symbol: "BTC/USDT"
+  SMA_BTC:
+    asset: { symbol: "BTC/USDT" }
     strategy:
-      type: "sma"
-      sma: { fast: 5, slow: 60 }
+      name: "SMA_Crossover"
+      params: { fast: 20, slow: 50 }
+      shift_bars: 1
+    backtest:
+      report: ["Cumulative Return", "Sharpe (daily,252)", "Max Drawdown", "Trades", "Exposure %"]
+
+# ===== Grid-search presets (tuỳ chọn) =====
+grids:
+
+  SMA_grid_BTC:
+    profile: "SMA_BTC"             # dùng logic/fees/timeframe của profile này
+    grid:
+      fast: { start: 5, stop: 60, step: 5 }
+      slow: { start: 50, stop: 250, step: 10 }
+      min_trades: 10
+      min_gap: 10                   # slow - fast >= 10
+      score: "Sharpe"
+
+  SMA_grid_ETH:
+    profile: "SMA_ETH"
+    grid:
+      fast: { start: 5, stop: 60, step: 5 }
+      slow: { start: 50, stop: 250, step: 10 }
+      min_trades: 10
+      min_gap: 10
+      score: "Sharpe"
